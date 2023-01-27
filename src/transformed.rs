@@ -42,6 +42,7 @@ enum Cont {
   C4(Data, usize),
   C5,
   C6,
+  C7(usize),
 }
 
 fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
@@ -129,7 +130,12 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
         }
         Cont::C6 => {
           let fst = ret.unwrap_func();
-          let mut tmp = hunc(es, Arg::Gunc(fst)).unwrap_gunc();
+          cs.push(Cont::C7(fst));
+          arg = Arg::Gunc(fst);
+          continue 'outer;
+        }
+        Cont::C7(fst) => {
+          let mut tmp = ret.unwrap_gunc();
           tmp.num += fst;
           ret = Ret::Gunc(tmp);
         }
