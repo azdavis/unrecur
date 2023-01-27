@@ -1,22 +1,10 @@
 use crate::common::{Data, Event, THRESHOLD};
 
-pub fn func(es: &mut Vec<Event>, mut data: Data) -> usize {
-  if data.num >= THRESHOLD {
-    es.push(Event::A(data.cond));
-    es.len() + data.num
-  } else {
-    data.cond = !data.cond || es.len() % 5 == 0;
-    if data.cond {
-      es.push(Event::B(data.num));
-      data.num += 1;
-      gunc(es, &mut data);
-      data.num + 2
-    } else {
-      es.push(Event::C);
-      data.num += 6;
-      let tmp = func(es, data);
-      tmp + 5
-    }
+pub fn func(es: &mut Vec<Event>, data: Data) -> usize {
+  let tmp = hunc(HuncArg::Func(es, data));
+  match tmp {
+    HuncRet::Func(ret) => ret,
+    HuncRet::Gunc => unreachable!(),
   }
 }
 
@@ -62,8 +50,24 @@ enum HuncRet {
 
 fn hunc(arg: HuncArg<'_>) -> HuncRet {
   match arg {
-    HuncArg::Func(es, data) => {
-      let tmp = func(es, data);
+    HuncArg::Func(es, mut data) => {
+      let tmp = if data.num >= THRESHOLD {
+        es.push(Event::A(data.cond));
+        es.len() + data.num
+      } else {
+        data.cond = !data.cond || es.len() % 5 == 0;
+        if data.cond {
+          es.push(Event::B(data.num));
+          data.num += 1;
+          gunc(es, &mut data);
+          data.num + 2
+        } else {
+          es.push(Event::C);
+          data.num += 6;
+          let tmp = func(es, data);
+          tmp + 5
+        }
+      };
       HuncRet::Func(tmp)
     }
     HuncArg::Gunc(es, data) => {
