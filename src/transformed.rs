@@ -1,17 +1,11 @@
 use crate::common::{Data, Event, THRESHOLD};
 
 pub fn func(es: &mut Vec<Event>, data: Data) -> usize {
-  match hunc(es, Arg::Func(data)) {
-    Ret::Func(ret) => ret,
-    Ret::Gunc(_) => unreachable!(),
-  }
+  hunc(es, Arg::Func(data)).unwrap_func()
 }
 
 pub fn gunc(es: &mut Vec<Event>, num: usize) -> Data {
-  match hunc(es, Arg::Gunc(num)) {
-    Ret::Func(_) => unreachable!(),
-    Ret::Gunc(ret) => ret,
-  }
+  hunc(es, Arg::Gunc(num)).unwrap_gunc()
 }
 
 enum Arg {
@@ -22,6 +16,22 @@ enum Arg {
 enum Ret {
   Func(usize),
   Gunc(Data),
+}
+
+impl Ret {
+  fn unwrap_func(self) -> usize {
+    match self {
+      Ret::Func(ret) => ret,
+      Ret::Gunc(_) => unreachable!(),
+    }
+  }
+
+  fn unwrap_gunc(self) -> Data {
+    match self {
+      Ret::Func(_) => unreachable!(),
+      Ret::Gunc(ret) => ret,
+    }
+  }
 }
 
 fn hunc(es: &mut Vec<Event>, arg: Arg) -> Ret {
