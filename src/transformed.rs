@@ -47,7 +47,8 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
         if data.cond {
           es.push(Event::B(data.num));
           data.num += 1;
-          gunc(es, &mut data);
+          let tmp = hunc(HuncArg::Gunc(es, &mut data));
+          tmp.unwrap_gunc();
           data.num + 2
         } else {
           es.push(Event::C);
@@ -79,12 +80,14 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
           if cond {
             es.push(Event::F);
             data.num += 4;
-            gunc(es, data);
+            let tmp = hunc(HuncArg::Gunc(es, data));
+            tmp.unwrap_gunc();
             data.num += 6;
           } else {
             es.push(Event::G);
             data.num += 3;
-            gunc(es, data);
+            let tmp = hunc(HuncArg::Gunc(es, data));
+            tmp.unwrap_gunc();
             data.num += 2;
           }
         }
