@@ -2,18 +2,12 @@ use crate::common::{Data, Event, THRESHOLD};
 
 pub fn func(es: &mut Vec<Event>, data: Data) -> usize {
   let tmp = hunc(HuncArg::Func(es, data));
-  match tmp {
-    HuncRet::Func(ret) => ret,
-    HuncRet::Gunc => unreachable!(),
-  }
+  tmp.unwrap_func()
 }
 
 pub fn gunc(es: &mut Vec<Event>, data: &mut Data) {
   let tmp = hunc(HuncArg::Gunc(es, data));
-  match tmp {
-    HuncRet::Func(_) => unreachable!(),
-    HuncRet::Gunc => {}
-  }
+  tmp.unwrap_gunc();
 }
 
 enum HuncArg<'a> {
@@ -24,6 +18,22 @@ enum HuncArg<'a> {
 enum HuncRet {
   Func(usize),
   Gunc,
+}
+
+impl HuncRet {
+  fn unwrap_func(self) -> usize {
+    match self {
+      HuncRet::Func(x) => x,
+      HuncRet::Gunc => unreachable!(),
+    }
+  }
+
+  fn unwrap_gunc(self) {
+    match self {
+      HuncRet::Func(_) => unreachable!(),
+      HuncRet::Gunc => {}
+    }
+  }
 }
 
 fn hunc(arg: HuncArg<'_>) -> HuncRet {
