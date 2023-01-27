@@ -2,5 +2,6 @@
   "files.exclude": {
     "target": true
   },
-  "cSpell.words": ["gunc", "hunc", "unrecur"]
+  "rust-analyzer.check.command": "clippy",
+  "cSpell.words": ["clippy", "gunc", "hunc", "unrecur"]
 }
