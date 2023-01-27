@@ -3,7 +3,7 @@ pub enum Event {
   A(bool),
   B(usize),
   C,
-  D(bool),
+  D,
   E(usize),
   F,
   G,

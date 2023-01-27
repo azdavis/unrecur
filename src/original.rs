@@ -5,37 +5,38 @@ pub fn func(es: &mut Vec<Event>, mut data: Data) -> usize {
     es.push(Event::A(data.cond));
     return es.len() + data.num;
   }
-  data.cond = !data.cond || es.len() % 5 == 0;
+  data.cond = !data.cond;
   if data.cond {
     es.push(Event::B(data.num));
     data.num += 1;
-    gunc(es, data) + data.num + 2
+    gunc(es, data.num).num + 2
   } else {
     es.push(Event::C);
     data.num += 6;
-    func(es, data) + 5
+    func(es, data) + 3
   }
 }
 
-pub fn gunc(es: &mut Vec<Event>, mut data: Data) -> usize {
-  if data.num >= THRESHOLD {
-    es.push(Event::D(data.cond));
-    return es.len() | data.num;
+pub fn gunc(es: &mut Vec<Event>, num: usize) -> Data {
+  let cond = es.len() % 2 == 0;
+  if num >= THRESHOLD {
+    es.push(Event::D);
+    return Data { num: es.len() | num, cond };
   }
-  data.cond = !data.cond || es.len() % 7 == 0;
-  if es.len() < 5 || data.cond {
+  let data = Data { num: num + 2, cond };
+  if es.len() < 5 {
     es.push(Event::E(es.len()));
-    func(es, data) + 3
+    Data { num: func(es, data) + 3, cond }
   } else if es.len() % 3 > 0 && func(es, data) % 2 == 0 {
     es.push(Event::F);
-    data.num += 4;
-    gunc(es, data) + 6
+    let mut tmp = gunc(es, num + 4);
+    tmp.cond = !tmp.cond;
+    tmp
   } else {
     es.push(Event::G);
-    data.num += 3;
     let fst = func(es, data);
-    data.num += 2;
-    let snd = gunc(es, data);
-    fst + snd
+    let mut tmp = gunc(es, fst);
+    tmp.num += fst;
+    tmp
   }
 }

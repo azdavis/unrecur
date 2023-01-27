@@ -10,12 +10,12 @@ fn run(f: fn(&mut Vec<Event>, Data) -> usize, num: usize) -> (usize, Vec<Event>)
 #[test]
 fn smoke() {
   use Event::{A, B, C, D, E, F, G};
-  let (ret, es) = run(original::func, 42);
+  let (ret, es) = run(original::func, 35);
   assert_eq!(
     es,
-    [B(42), E(1), B(43), E(3), B(44), B(45), G, B(49), D(true), D(false), F, E(11), C, A(false)]
+    [B(35), E(1), B(38), E(3), B(41), B(44), G, C, A(false), D, F, B(48), G, A(true), D, F, D]
   );
-  assert_eq!(227, ret);
+  assert_eq!(63, ret);
 }
 
 // #[test]
