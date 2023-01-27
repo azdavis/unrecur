@@ -49,3 +49,26 @@ pub fn gunc(es: &mut Vec<Event>, data: &mut Data) {
     }
   }
 }
+
+enum HuncArg<'a> {
+  Func(&'a mut Vec<Event>, Data),
+  Gunc(&'a mut Vec<Event>, &'a mut Data),
+}
+
+enum HuncRet {
+  Func(usize),
+  Gunc,
+}
+
+fn hunc(arg: HuncArg<'_>) -> HuncRet {
+  match arg {
+    HuncArg::Func(es, data) => {
+      let tmp = func(es, data);
+      HuncRet::Func(tmp)
+    }
+    HuncArg::Gunc(es, data) => {
+      gunc(es, data);
+      HuncRet::Gunc
+    }
+  }
+}
