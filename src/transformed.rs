@@ -31,7 +31,10 @@ pub fn gunc(es: &mut Vec<Event>, num: usize) -> Data {
     let tmp = func(es, data);
     Data { num: tmp + 3, cond }
   } else {
-    let cond = es.len() % 3 > 0 && func(es, data.clone()) % 2 == 0;
+    let mut cond = es.len() % 3 > 0;
+    if cond {
+      cond = func(es, data.clone()) % 2 == 0;
+    }
     if cond {
       es.push(Event::F);
       let mut tmp = gunc(es, num + 4);
