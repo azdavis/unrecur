@@ -40,6 +40,7 @@ enum HuncCont<'a> {
   C1(Data),
   C2,
   C3(&'a mut Data),
+  C4(&'a mut Vec<Event>, &'a mut Data),
 }
 
 impl HuncCont<'_> {
@@ -57,6 +58,11 @@ impl HuncCont<'_> {
         let tmp = tmp.unwrap_func();
         data.num = tmp + 3;
         HuncRet::Gunc
+      }
+      HuncCont::C4(es, data) => {
+        let tmp = tmp.unwrap_func();
+        let cond = tmp % 2 == 0;
+        c4_post_if(es, data, cond)
       }
     }
   }
@@ -94,12 +100,10 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
           let tmp = hunc(HuncArg::Func(es, *data));
           HuncCont::C3(data).run(tmp)
         } else {
-          let mut cond = es.len() % 3 > 0;
+          let cond = es.len() % 3 > 0;
           if cond {
             let tmp = hunc(HuncArg::Func(es, *data));
-            let tmp = tmp.unwrap_func();
-            cond = tmp % 2 == 0;
-            c4_post_if(es, data, cond)
+            HuncCont::C4(es, data).run(tmp)
           } else {
             c4_post_if(es, data, cond)
           }
