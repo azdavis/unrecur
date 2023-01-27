@@ -38,6 +38,7 @@ impl HuncRet {
 
 enum HuncCont {
   C1(Data),
+  C2,
 }
 
 impl HuncCont {
@@ -46,6 +47,10 @@ impl HuncCont {
       HuncCont::C1(data) => {
         tmp.unwrap_gunc();
         HuncRet::Func(data.num + 2)
+      }
+      HuncCont::C2 => {
+        let tmp = tmp.unwrap_func();
+        HuncRet::Func(tmp + 5)
       }
     }
   }
@@ -68,8 +73,7 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
           es.push(Event::C);
           data.num += 6;
           let tmp = hunc(HuncArg::Func(es, data));
-          let tmp = tmp.unwrap_func();
-          HuncRet::Func(tmp + 5)
+          HuncCont::C2.run(tmp)
         }
       }
     }
