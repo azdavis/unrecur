@@ -14,7 +14,8 @@ pub fn func(es: &mut Vec<Event>, mut data: Data) -> usize {
   } else {
     es.push(Event::C);
     data.num += 6;
-    func(es, data) + 5
+    let tmp = func(es, data);
+    tmp + 5
   }
 }
 
@@ -26,7 +27,8 @@ pub fn gunc(es: &mut Vec<Event>, data: &mut Data) {
   data.cond = !data.cond || es.len() % 7 == 0;
   if es.len() < 5 || data.cond {
     es.push(Event::E(es.len()));
-    data.num = func(es, *data) + 3;
+    let tmp = func(es, *data);
+    data.num = tmp + 3;
   } else if es.len() % 3 > 0 && func(es, *data) % 2 == 0 {
     es.push(Event::F);
     data.num += 4;
