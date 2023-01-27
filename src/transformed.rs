@@ -40,6 +40,7 @@ enum Cont {
   C2,
   C3(bool),
   C4(Data, usize),
+  C5,
 }
 
 fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
@@ -85,7 +86,7 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
             arg = Arg::Func(data);
             continue;
           }
-          match post_if_c4(es, data, num, cond) {
+          match post_if_c4(&mut cs, es, data, num, cond) {
             ControlFlow::Continue(a) => {
               arg = a;
               continue;
@@ -112,7 +113,7 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
         Cont::C4(data, num) => {
           let tmp = ret.unwrap_func();
           let cond = tmp % 2 == 0;
-          match post_if_c4(es, data, num, cond) {
+          match post_if_c4(&mut cs, es, data, num, cond) {
             ControlFlow::Continue(a) => {
               arg = a;
               continue 'outer;
@@ -120,18 +121,28 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
             ControlFlow::Break(r) => ret = r,
           }
         }
+        Cont::C5 => {
+          let mut tmp = ret.unwrap_gunc();
+          tmp.cond = !tmp.cond;
+          ret = Ret::Gunc(tmp);
+        }
       }
     }
     return ret;
   }
 }
 
-fn post_if_c4(es: &mut Vec<Event>, data: Data, num: usize, cond: bool) -> ControlFlow<Ret, Arg> {
+fn post_if_c4(
+  cs: &mut Vec<Cont>,
+  es: &mut Vec<Event>,
+  data: Data,
+  num: usize,
+  cond: bool,
+) -> ControlFlow<Ret, Arg> {
   if cond {
     es.push(Event::F);
-    let mut tmp = hunc(es, Arg::Gunc(num + 4)).unwrap_gunc();
-    tmp.cond = !tmp.cond;
-    ControlFlow::Break(Ret::Gunc(tmp))
+    cs.push(Cont::C5);
+    ControlFlow::Continue(Arg::Gunc(num + 4))
   } else {
     es.push(Event::G);
     let fst = hunc(es, Arg::Func(data)).unwrap_func();
