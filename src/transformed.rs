@@ -52,7 +52,8 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
         } else {
           es.push(Event::C);
           data.num += 6;
-          let tmp = func(es, data);
+          let tmp = hunc(HuncArg::Func(es, data));
+          let tmp = tmp.unwrap_func();
           tmp + 5
         }
       };
@@ -65,12 +66,14 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
         data.cond = !data.cond || es.len() % 7 == 0;
         if es.len() < 5 || data.cond {
           es.push(Event::E(es.len()));
-          let tmp = func(es, *data);
+          let tmp = hunc(HuncArg::Func(es, *data));
+          let tmp = tmp.unwrap_func();
           data.num = tmp + 3;
         } else {
           let mut cond = es.len() % 3 > 0;
           if cond {
-            let tmp = func(es, *data);
+            let tmp = hunc(HuncArg::Func(es, *data));
+            let tmp = tmp.unwrap_func();
             cond = tmp % 2 == 0;
           }
           if cond {
