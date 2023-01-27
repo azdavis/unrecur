@@ -37,6 +37,7 @@ impl Ret {
 enum Cont {
   C1,
   C2,
+  C3(bool),
 }
 
 fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
@@ -72,26 +73,26 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
           let data = Data { num: num + 2, cond };
           if es.len() < 5 {
             es.push(Event::E(es.len()));
-            let tmp = hunc(es, Arg::Func(data)).unwrap_func();
-            Ret::Gunc(Data { num: tmp + 3, cond })
+            cs.push(Cont::C3(cond));
+            arg = Arg::Func(data);
+            continue;
+          }
+          let mut cond = es.len() % 3 > 0;
+          if cond {
+            let tmp = hunc(es, Arg::Func(data.clone())).unwrap_func();
+            cond = tmp % 2 == 0;
+          }
+          if cond {
+            es.push(Event::F);
+            let mut tmp = hunc(es, Arg::Gunc(num + 4)).unwrap_gunc();
+            tmp.cond = !tmp.cond;
+            Ret::Gunc(tmp)
           } else {
-            let mut cond = es.len() % 3 > 0;
-            if cond {
-              let tmp = hunc(es, Arg::Func(data.clone())).unwrap_func();
-              cond = tmp % 2 == 0;
-            }
-            if cond {
-              es.push(Event::F);
-              let mut tmp = hunc(es, Arg::Gunc(num + 4)).unwrap_gunc();
-              tmp.cond = !tmp.cond;
-              Ret::Gunc(tmp)
-            } else {
-              es.push(Event::G);
-              let fst = hunc(es, Arg::Func(data)).unwrap_func();
-              let mut tmp = hunc(es, Arg::Gunc(fst)).unwrap_gunc();
-              tmp.num += fst;
-              Ret::Gunc(tmp)
-            }
+            es.push(Event::G);
+            let fst = hunc(es, Arg::Func(data)).unwrap_func();
+            let mut tmp = hunc(es, Arg::Gunc(fst)).unwrap_gunc();
+            tmp.num += fst;
+            Ret::Gunc(tmp)
           }
         }
       }
@@ -105,6 +106,10 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
         Cont::C2 => {
           let tmp = ret.unwrap_func();
           ret = Ret::Func(tmp + 3);
+        }
+        Cont::C3(cond) => {
+          let tmp = ret.unwrap_func();
+          ret = Ret::Gunc(Data { num: tmp + 3, cond });
         }
       }
     }
