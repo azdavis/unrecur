@@ -34,8 +34,11 @@ impl Ret {
   }
 }
 
+enum Cont {}
+
 fn hunc(es: &mut Vec<Event>, arg: Arg) -> Ret {
-  match arg {
+  let mut cs = Vec::<Cont>::new();
+  let ret = match arg {
     Arg::Func(mut data) => {
       if data.num >= THRESHOLD {
         es.push(Event::A(data.cond));
@@ -87,5 +90,9 @@ fn hunc(es: &mut Vec<Event>, arg: Arg) -> Ret {
         }
       }
     }
+  };
+  while let Some(cont) = cs.pop() {
+    match cont {}
   }
+  ret
 }
