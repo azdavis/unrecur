@@ -38,6 +38,7 @@ enum Cont {
   C1,
   C2,
   C3(bool),
+  C4(Data, usize),
 }
 
 fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
@@ -77,10 +78,11 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
             arg = Arg::Func(data);
             continue;
           }
-          let mut cond = es.len() % 3 > 0;
+          let cond = es.len() % 3 > 0;
           if cond {
-            let tmp = hunc(es, Arg::Func(data.clone())).unwrap_func();
-            cond = tmp % 2 == 0;
+            cs.push(Cont::C4(data.clone(), num));
+            arg = Arg::Func(data);
+            continue;
           }
           post_if_c4(es, data, num, cond)
         }
@@ -99,6 +101,11 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
         Cont::C3(cond) => {
           let tmp = ret.unwrap_func();
           ret = Ret::Gunc(Data { num: tmp + 3, cond });
+        }
+        Cont::C4(data, num) => {
+          let tmp = ret.unwrap_func();
+          let cond = tmp % 2 == 0;
+          ret = post_if_c4(es, data, num, cond);
         }
       }
     }
