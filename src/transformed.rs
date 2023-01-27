@@ -36,12 +36,13 @@ impl HuncRet {
   }
 }
 
-enum HuncCont {
+enum HuncCont<'a> {
   C1(Data),
   C2,
+  C3(&'a mut Data),
 }
 
-impl HuncCont {
+impl HuncCont<'_> {
   fn run(self, tmp: HuncRet) -> HuncRet {
     match self {
       HuncCont::C1(data) => {
@@ -51,6 +52,11 @@ impl HuncCont {
       HuncCont::C2 => {
         let tmp = tmp.unwrap_func();
         HuncRet::Func(tmp + 5)
+      }
+      HuncCont::C3(data) => {
+        let tmp = tmp.unwrap_func();
+        data.num = tmp + 3;
+        HuncRet::Gunc
       }
     }
   }
@@ -86,9 +92,7 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
         if es.len() < 5 || data.cond {
           es.push(Event::E(es.len()));
           let tmp = hunc(HuncArg::Func(es, *data));
-          let tmp = tmp.unwrap_func();
-          data.num = tmp + 3;
-          HuncRet::Gunc
+          HuncCont::C3(data).run(tmp)
         } else {
           let mut cond = es.len() % 3 > 0;
           if cond {
