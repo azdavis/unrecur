@@ -41,6 +41,7 @@ enum Cont {
   C3(bool),
   C4(Data, usize),
   C5,
+  C6,
 }
 
 fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
@@ -126,6 +127,12 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
           tmp.cond = !tmp.cond;
           ret = Ret::Gunc(tmp);
         }
+        Cont::C6 => {
+          let fst = ret.unwrap_func();
+          let mut tmp = hunc(es, Arg::Gunc(fst)).unwrap_gunc();
+          tmp.num += fst;
+          ret = Ret::Gunc(tmp);
+        }
       }
     }
     return ret;
@@ -145,9 +152,7 @@ fn post_if_c4(
     ControlFlow::Continue(Arg::Gunc(num + 4))
   } else {
     es.push(Event::G);
-    let fst = hunc(es, Arg::Func(data)).unwrap_func();
-    let mut tmp = hunc(es, Arg::Gunc(fst)).unwrap_gunc();
-    tmp.num += fst;
-    ControlFlow::Break(Ret::Gunc(tmp))
+    cs.push(Cont::C6);
+    ControlFlow::Continue(Arg::Func(data))
   }
 }
