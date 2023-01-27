@@ -13,9 +13,9 @@ fn smoke() {
   let (ret, es) = run(original::func, 42);
   assert_eq!(
     es,
-    [B(42), E(1), B(43), E(3), B(44), B(45), G, E(7), C, A(false), D(false), F, E(12), C, A(false)]
+    [B(42), E(1), B(43), E(3), B(44), B(45), G, B(49), D(true), D(false), F, E(11), C, A(false)]
   );
-  assert_eq!(45, ret);
+  assert_eq!(227, ret);
 }
 
 // #[test]
