@@ -39,9 +39,9 @@ impl HuncRet {
 fn hunc(arg: HuncArg<'_>) -> HuncRet {
   match arg {
     HuncArg::Func(es, mut data) => {
-      let tmp = if data.num >= THRESHOLD {
+      if data.num >= THRESHOLD {
         es.push(Event::A(data.cond));
-        es.len() + data.num
+        HuncRet::Func(es.len() + data.num)
       } else {
         data.cond = !data.cond || es.len() % 5 == 0;
         if data.cond {
@@ -49,20 +49,20 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
           data.num += 1;
           let tmp = hunc(HuncArg::Gunc(es, &mut data));
           tmp.unwrap_gunc();
-          data.num + 2
+          HuncRet::Func(data.num + 2)
         } else {
           es.push(Event::C);
           data.num += 6;
           let tmp = hunc(HuncArg::Func(es, data));
           let tmp = tmp.unwrap_func();
-          tmp + 5
+          HuncRet::Func(tmp + 5)
         }
-      };
-      HuncRet::Func(tmp)
+      }
     }
     HuncArg::Gunc(es, data) => {
       if data.num >= THRESHOLD {
         es.push(Event::D(data.cond));
+        HuncRet::Gunc
       } else {
         data.cond = !data.cond || es.len() % 7 == 0;
         if es.len() < 5 || data.cond {
@@ -70,6 +70,7 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
           let tmp = hunc(HuncArg::Func(es, *data));
           let tmp = tmp.unwrap_func();
           data.num = tmp + 3;
+          HuncRet::Gunc
         } else {
           let mut cond = es.len() % 3 > 0;
           if cond {
@@ -83,16 +84,17 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
             let tmp = hunc(HuncArg::Gunc(es, data));
             tmp.unwrap_gunc();
             data.num += 6;
+            HuncRet::Gunc
           } else {
             es.push(Event::G);
             data.num += 3;
             let tmp = hunc(HuncArg::Gunc(es, data));
             tmp.unwrap_gunc();
             data.num += 2;
+            HuncRet::Gunc
           }
         }
       }
-      HuncRet::Gunc
     }
   }
 }
