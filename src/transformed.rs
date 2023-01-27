@@ -1,4 +1,5 @@
 use crate::common::{Data, Event, THRESHOLD};
+use std::ops::ControlFlow;
 
 pub fn func(es: &mut Vec<Event>, data: Data) -> usize {
   hunc(es, Arg::Func(data)).unwrap_func()
@@ -43,7 +44,7 @@ enum Cont {
 
 fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
   let mut cs = Vec::<Cont>::new();
-  loop {
+  'outer: loop {
     let mut ret = match arg {
       Arg::Func(mut data) => {
         if data.num >= THRESHOLD {
@@ -84,7 +85,13 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
             arg = Arg::Func(data);
             continue;
           }
-          post_if_c4(es, data, num, cond)
+          match post_if_c4(es, data, num, cond) {
+            ControlFlow::Continue(a) => {
+              arg = a;
+              continue;
+            }
+            ControlFlow::Break(r) => r,
+          }
         }
       }
     };
@@ -105,7 +112,13 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
         Cont::C4(data, num) => {
           let tmp = ret.unwrap_func();
           let cond = tmp % 2 == 0;
-          ret = post_if_c4(es, data, num, cond);
+          match post_if_c4(es, data, num, cond) {
+            ControlFlow::Continue(a) => {
+              arg = a;
+              continue 'outer;
+            }
+            ControlFlow::Break(r) => ret = r,
+          }
         }
       }
     }
@@ -113,17 +126,17 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
   }
 }
 
-fn post_if_c4(es: &mut Vec<Event>, data: Data, num: usize, cond: bool) -> Ret {
+fn post_if_c4(es: &mut Vec<Event>, data: Data, num: usize, cond: bool) -> ControlFlow<Ret, Arg> {
   if cond {
     es.push(Event::F);
     let mut tmp = hunc(es, Arg::Gunc(num + 4)).unwrap_gunc();
     tmp.cond = !tmp.cond;
-    Ret::Gunc(tmp)
+    ControlFlow::Break(Ret::Gunc(tmp))
   } else {
     es.push(Event::G);
     let fst = hunc(es, Arg::Func(data)).unwrap_func();
     let mut tmp = hunc(es, Arg::Gunc(fst)).unwrap_gunc();
     tmp.num += fst;
-    Ret::Gunc(tmp)
+    ControlFlow::Break(Ret::Gunc(tmp))
   }
 }
