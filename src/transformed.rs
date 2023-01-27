@@ -100,23 +100,27 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
             let tmp = tmp.unwrap_func();
             cond = tmp % 2 == 0;
           }
-          if cond {
-            es.push(Event::F);
-            data.num += 4;
-            let tmp = hunc(HuncArg::Gunc(es, data));
-            tmp.unwrap_gunc();
-            data.num += 6;
-            HuncRet::Gunc
-          } else {
-            es.push(Event::G);
-            data.num += 3;
-            let tmp = hunc(HuncArg::Gunc(es, data));
-            tmp.unwrap_gunc();
-            data.num += 2;
-            HuncRet::Gunc
-          }
+          c4_post_if(es, data, cond)
         }
       }
     }
+  }
+}
+
+fn c4_post_if(es: &mut Vec<Event>, data: &mut Data, cond: bool) -> HuncRet {
+  if cond {
+    es.push(Event::F);
+    data.num += 4;
+    let tmp = hunc(HuncArg::Gunc(es, data));
+    tmp.unwrap_gunc();
+    data.num += 6;
+    HuncRet::Gunc
+  } else {
+    es.push(Event::G);
+    data.num += 3;
+    let tmp = hunc(HuncArg::Gunc(es, data));
+    tmp.unwrap_gunc();
+    data.num += 2;
+    HuncRet::Gunc
   }
 }
