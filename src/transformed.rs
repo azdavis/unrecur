@@ -82,18 +82,7 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
             let tmp = hunc(es, Arg::Func(data.clone())).unwrap_func();
             cond = tmp % 2 == 0;
           }
-          if cond {
-            es.push(Event::F);
-            let mut tmp = hunc(es, Arg::Gunc(num + 4)).unwrap_gunc();
-            tmp.cond = !tmp.cond;
-            Ret::Gunc(tmp)
-          } else {
-            es.push(Event::G);
-            let fst = hunc(es, Arg::Func(data)).unwrap_func();
-            let mut tmp = hunc(es, Arg::Gunc(fst)).unwrap_gunc();
-            tmp.num += fst;
-            Ret::Gunc(tmp)
-          }
+          post_if_c4(es, data, num, cond)
         }
       }
     };
@@ -114,5 +103,20 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
       }
     }
     return ret;
+  }
+}
+
+fn post_if_c4(es: &mut Vec<Event>, data: Data, num: usize, cond: bool) -> Ret {
+  if cond {
+    es.push(Event::F);
+    let mut tmp = hunc(es, Arg::Gunc(num + 4)).unwrap_gunc();
+    tmp.cond = !tmp.cond;
+    Ret::Gunc(tmp)
+  } else {
+    es.push(Event::G);
+    let fst = hunc(es, Arg::Func(data)).unwrap_func();
+    let mut tmp = hunc(es, Arg::Gunc(fst)).unwrap_gunc();
+    tmp.num += fst;
+    Ret::Gunc(tmp)
   }
 }
