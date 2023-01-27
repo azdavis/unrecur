@@ -99,8 +99,10 @@ fn hunc(arg: HuncArg<'_>) -> HuncRet {
             let tmp = hunc(HuncArg::Func(es, *data));
             let tmp = tmp.unwrap_func();
             cond = tmp % 2 == 0;
+            c4_post_if(es, data, cond)
+          } else {
+            c4_post_if(es, data, cond)
           }
-          c4_post_if(es, data, cond)
         }
       }
     }
