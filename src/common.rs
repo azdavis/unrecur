@@ -15,4 +15,4 @@ pub struct Data {
   pub cond: bool,
 }
 
-pub const THRESHOLD: usize = 50;
+pub const THRESHOLD: usize = 150;
