@@ -29,15 +29,17 @@ pub fn gunc(es: &mut Vec<Event>, data: &mut Data) {
     es.push(Event::E(es.len()));
     let tmp = func(es, *data);
     data.num = tmp + 3;
-  } else if es.len() % 3 > 0 && func(es, *data) % 2 == 0 {
-    es.push(Event::F);
-    data.num += 4;
-    gunc(es, data);
-    data.num += 6;
   } else {
-    es.push(Event::G);
-    data.num += 3;
-    gunc(es, data);
-    data.num += 2;
+    if es.len() % 3 > 0 && func(es, *data) % 2 == 0 {
+      es.push(Event::F);
+      data.num += 4;
+      gunc(es, data);
+      data.num += 6;
+    } else {
+      es.push(Event::G);
+      data.num += 3;
+      gunc(es, data);
+      data.num += 2;
+    }
   }
 }
