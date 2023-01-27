@@ -34,13 +34,14 @@ impl Ret {
   }
 }
 
-enum Cont {}
+enum Cont {
+  C1,
+}
 
-fn hunc(es: &mut Vec<Event>, arg: Arg) -> Ret {
+fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
   let mut cs = Vec::<Cont>::new();
-  #[allow(clippy::never_loop)]
   loop {
-    let ret = match arg {
+    let mut ret = match arg {
       Arg::Func(mut data) => {
         if data.num >= THRESHOLD {
           es.push(Event::A(data.cond));
@@ -50,14 +51,14 @@ fn hunc(es: &mut Vec<Event>, arg: Arg) -> Ret {
           if data.cond {
             es.push(Event::B(data.num));
             data.num += 1;
-            let tmp = hunc(es, Arg::Gunc(data.num)).unwrap_gunc().num;
-            Ret::Func(tmp + 2)
-          } else {
-            es.push(Event::C);
-            data.num += 6;
-            let tmp = hunc(es, Arg::Func(data)).unwrap_func();
-            Ret::Func(tmp + 3)
+            cs.push(Cont::C1);
+            arg = Arg::Gunc(data.num);
+            continue;
           }
+          es.push(Event::C);
+          data.num += 6;
+          let tmp = hunc(es, Arg::Func(data)).unwrap_func();
+          Ret::Func(tmp + 3)
         }
       }
       Arg::Gunc(num) => {
@@ -94,7 +95,12 @@ fn hunc(es: &mut Vec<Event>, arg: Arg) -> Ret {
       }
     };
     while let Some(cont) = cs.pop() {
-      match cont {}
+      match cont {
+        Cont::C1 => {
+          let tmp = ret.unwrap_gunc().num;
+          ret = Ret::Func(tmp + 2);
+        }
+      }
     }
     return ret;
   }
