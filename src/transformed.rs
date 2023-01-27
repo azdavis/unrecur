@@ -52,3 +52,20 @@ pub fn gunc(es: &mut Vec<Event>, num: usize) -> Data {
     }
   }
 }
+
+enum Arg {
+  Func(Data),
+  Gunc(usize),
+}
+
+enum Ret {
+  Func(usize),
+  Gunc(Data),
+}
+
+fn hunc(es: &mut Vec<Event>, arg: Arg) -> Ret {
+  match arg {
+    Arg::Func(data) => Ret::Func(func(es, data)),
+    Arg::Gunc(num) => Ret::Gunc(gunc(es, num)),
+  }
+}
