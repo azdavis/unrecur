@@ -36,6 +36,7 @@ impl Ret {
 
 enum Cont {
   C1,
+  C2,
 }
 
 fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
@@ -57,8 +58,9 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
           }
           es.push(Event::C);
           data.num += 6;
-          let tmp = hunc(es, Arg::Func(data)).unwrap_func();
-          Ret::Func(tmp + 3)
+          cs.push(Cont::C2);
+          arg = Arg::Func(data);
+          continue;
         }
       }
       Arg::Gunc(num) => {
@@ -99,6 +101,10 @@ fn hunc(es: &mut Vec<Event>, mut arg: Arg) -> Ret {
         Cont::C1 => {
           let tmp = ret.unwrap_gunc().num;
           ret = Ret::Func(tmp + 2);
+        }
+        Cont::C2 => {
+          let tmp = ret.unwrap_func();
+          ret = Ret::Func(tmp + 3);
         }
       }
     }
