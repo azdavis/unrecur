@@ -9,7 +9,7 @@ fn run(f: fn(&mut Vec<Event>, Data) -> usize, num: usize) -> (usize, Vec<Event>)
 }
 
 #[test]
-fn original_is_transformed() {
+fn all_same() {
   for num in 0usize..=THRESHOLD {
     let (r0, e0) = run(original::func, num);
     let (r1, e1) = run(transformed::func, num);
@@ -28,7 +28,7 @@ where
 }
 
 #[test]
-fn original_is_faster() {
+fn original_faster_than_transformed() {
   let ((r0, e0), t0) = with_duration(|| run(original::func, 0));
   let ((r1, e1), t1) = with_duration(|| run(transformed::func, 0));
   assert_eq!(r0, r1);
