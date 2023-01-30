@@ -1,5 +1,5 @@
-use crate::common::{Data, Event};
-use crate::original;
+use crate::common::{Data, Event, THRESHOLD};
+use crate::{original, transformed};
 
 fn run(f: fn(&mut Vec<Event>, Data) -> usize, num: usize) -> (usize, Vec<Event>) {
   let mut es = Vec::<Event>::new();
@@ -18,12 +18,12 @@ fn smoke() {
   assert_eq!(63, ret);
 }
 
-// #[test]
-// fn original_is_transformed() {
-//   for num in 0usize..=THRESHOLD {
-//     let (r0, e0) = run(original::func, num);
-//     let (r1, e1) = run(transformed::func, num);
-//     assert_eq!(r0, r1);
-//     assert_eq!(e0, e1);
-//   }
-// }
+#[test]
+fn original_is_transformed() {
+  for num in 0usize..=THRESHOLD {
+    let (r0, e0) = run(original::func, num);
+    let (r1, e1) = run(transformed::func, num);
+    assert_eq!(r0, r1);
+    assert_eq!(e0, e1);
+  }
+}
