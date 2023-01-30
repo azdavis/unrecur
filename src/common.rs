@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Event {
   A(bool),
   B(usize),
@@ -9,7 +9,7 @@ pub enum Event {
   G,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub struct Data {
   pub num: usize,
   pub cond: bool,
